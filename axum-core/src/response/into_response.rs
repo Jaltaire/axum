@@ -148,6 +148,19 @@ where
     }
 }
 
+impl<B, C> IntoResponse for std::ops::ControlFlow<B, C>
+where
+    B: IntoResponse,
+    C: IntoResponse,
+{
+    fn into_response(self) -> Response {
+        match self {
+            std::ops::ControlFlow::Break(b) => b.into_response(),
+            std::ops::ControlFlow::Continue(c) => c.into_response(),
+        }
+    }
+}
+
 impl<B> IntoResponse for Response<B>
 where
     B: http_body::Body<Data = Bytes> + Send + 'static,
