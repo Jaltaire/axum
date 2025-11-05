@@ -2,14 +2,14 @@
 //!
 //! See [`Multipart`] for more details.
 
-use axum::{
-    body::{Body, Bytes},
+use axum_core::{
+    RequestExt, __composite_rejection as composite_rejection,
+    __define_rejection as define_rejection,
+    body::Body,
     extract::FromRequest,
     response::{IntoResponse, Response},
-    RequestExt,
 };
-use axum_core::__composite_rejection as composite_rejection;
-use axum_core::__define_rejection as define_rejection;
+use bytes::Bytes;
 use futures_core::stream::Stream;
 use http::{
     header::{HeaderMap, CONTENT_TYPE},
@@ -150,6 +150,7 @@ impl Field {
     /// The field name found in the
     /// [`Content-Disposition`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition)
     /// header.
+    #[must_use]
     pub fn name(&self) -> Option<&str> {
         self.inner.name()
     }
@@ -157,16 +158,19 @@ impl Field {
     /// The file name found in the
     /// [`Content-Disposition`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition)
     /// header.
+    #[must_use]
     pub fn file_name(&self) -> Option<&str> {
         self.inner.file_name()
     }
 
     /// Get the [content type](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Type) of the field.
+    #[must_use]
     pub fn content_type(&self) -> Option<&str> {
         self.inner.content_type().map(|m| m.as_ref())
     }
 
     /// Get a map of headers as [`HeaderMap`].
+    #[must_use]
     pub fn headers(&self) -> &HeaderMap {
         self.inner.headers()
     }
@@ -253,6 +257,7 @@ impl MultipartError {
     }
 
     /// Get the status code used for this rejection.
+    #[must_use]
     pub fn status(&self) -> http::StatusCode {
         status_code_from_multer_error(&self.source)
     }
@@ -279,7 +284,7 @@ fn status_code_from_multer_error(err: &multer::Error) -> StatusCode {
             }
 
             if err
-                .downcast_ref::<axum::Error>()
+                .downcast_ref::<axum_core::Error>()
                 .and_then(|err| err.source())
                 .and_then(|err| err.downcast_ref::<http_body_util::LengthLimitError>())
                 .is_some()

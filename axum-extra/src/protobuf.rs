@@ -1,12 +1,12 @@
 //! Protocol Buffer extractor and response.
 
-use axum::{
+use axum_core::__composite_rejection as composite_rejection;
+use axum_core::__define_rejection as define_rejection;
+use axum_core::{
     extract::{rejection::BytesRejection, FromRequest, Request},
     response::{IntoResponse, Response},
     RequestExt,
 };
-use axum_core::__composite_rejection as composite_rejection;
-use axum_core::__define_rejection as define_rejection;
 use bytes::BytesMut;
 use http::StatusCode;
 use http_body_util::BodyExt;
@@ -109,7 +109,7 @@ where
             .aggregate();
 
         match T::decode(&mut buf) {
-            Ok(value) => Ok(Protobuf(value)),
+            Ok(value) => Ok(Self(value)),
             Err(err) => Err(ProtobufDecodeError::from_err(err).into()),
         }
     }
@@ -172,7 +172,7 @@ mod tests {
 
         let app = Router::new().route(
             "/",
-            post(|input: Protobuf<Input>| async move { input.foo.to_owned() }),
+            post(|Protobuf(input): Protobuf<Input>| async move { input.foo }),
         );
 
         let input = Input {
@@ -228,10 +228,8 @@ mod tests {
         }
 
         #[axum::debug_handler]
-        async fn handler(input: Protobuf<Input>) -> Protobuf<Output> {
-            let output = Output {
-                result: input.foo.to_owned(),
-            };
+        async fn handler(Protobuf(input): Protobuf<Input>) -> Protobuf<Output> {
+            let output = Output { result: input.foo };
 
             Protobuf(output)
         }

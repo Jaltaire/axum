@@ -1,6 +1,6 @@
 use super::{ErrorKind, PathDeserializationError};
 use crate::util::PercentDecodedStr;
-use serde::{
+use serde_core::{
     de::{self, DeserializeSeed, EnumAccess, Error, MapAccess, SeqAccess, VariantAccess, Visitor},
     forward_to_deserialize_any, Deserializer,
 };
@@ -639,8 +639,7 @@ enum KeyOrIdx<'de> {
 impl<'de> KeyOrIdx<'de> {
     fn key(&self) -> &'de str {
         match &self {
-            Self::Key(key) => key,
-            Self::Idx { key, .. } => key,
+            Self::Idx { key, .. } | Self::Key(key) => key,
         }
     }
 }

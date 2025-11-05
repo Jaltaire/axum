@@ -1,10 +1,10 @@
-use axum::extract::{FromRequest, Request};
 use axum_core::__composite_rejection as composite_rejection;
 use axum_core::__define_rejection as define_rejection;
 use axum_core::extract::rejection::BytesRejection;
+use axum_core::extract::{FromRequest, Request};
 use bytes::Bytes;
 use http::{header, HeaderMap};
-use serde::Deserialize;
+use serde_core::Deserialize;
 use std::marker::PhantomData;
 
 /// JSON Extractor for zero-copy deserialization.
@@ -183,21 +183,15 @@ composite_rejection! {
 }
 
 fn json_content_type(headers: &HeaderMap) -> bool {
-    let content_type = if let Some(content_type) = headers.get(header::CONTENT_TYPE) {
-        content_type
-    } else {
+    let Some(content_type) = headers.get(header::CONTENT_TYPE) else {
         return false;
     };
 
-    let content_type = if let Ok(content_type) = content_type.to_str() {
-        content_type
-    } else {
+    let Ok(content_type) = content_type.to_str() else {
         return false;
     };
 
-    let mime = if let Ok(mime) = content_type.parse::<mime::Mime>() {
-        mime
-    } else {
+    let Ok(mime) = content_type.parse::<mime::Mime>() else {
         return false;
     };
 

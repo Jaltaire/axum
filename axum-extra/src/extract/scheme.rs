@@ -1,8 +1,7 @@
 //! Extractor that parses the scheme of a request.
 //! See [`Scheme`] for more details.
 
-use axum::extract::FromRequestParts;
-use axum_core::__define_rejection as define_rejection;
+use axum_core::{__define_rejection as define_rejection, extract::FromRequestParts};
 use http::{
     header::{HeaderMap, FORWARDED},
     request::Parts,
@@ -38,7 +37,7 @@ where
     async fn from_request_parts(parts: &mut Parts, _state: &S) -> Result<Self, Self::Rejection> {
         // Within Forwarded header
         if let Some(scheme) = parse_forwarded(&parts.headers) {
-            return Ok(Scheme(scheme.to_owned()));
+            return Ok(Self(scheme.to_owned()));
         }
 
         // X-Forwarded-Proto
@@ -47,12 +46,12 @@ where
             .get(X_FORWARDED_PROTO_HEADER_KEY)
             .and_then(|scheme| scheme.to_str().ok())
         {
-            return Ok(Scheme(scheme.to_owned()));
+            return Ok(Self(scheme.to_owned()));
         }
 
         // From parts of an HTTP/2 request
         if let Some(scheme) = parts.uri.scheme_str() {
-            return Ok(Scheme(scheme.to_owned()));
+            return Ok(Self(scheme.to_owned()));
         }
 
         Err(SchemeMissing)

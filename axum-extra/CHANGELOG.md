@@ -8,14 +8,36 @@ and this project adheres to [Semantic Versioning].
 - **breaking:** Remove unused `async-stream` feature, which was accidentally
   introduced as an implicit feature through an optional dependency which was no
   longer being used ([#3298])
+- **breaking:** `option_layer` now maps the `Response` body type to `axum::body::Body` ([#3469])
+- **breaking:** Some new features are added which need to be opted in ([#3485]).
+  - `Cached` extractor requires `cached` feature.
+  - The handler utilities require `handler` feature.
+  - The middleware utilities require `middleware` feature.
+  - `OptionalPath` extractor requires `optional-path` feature.
+  - The routing utilities require `routing` feature.
+  - `WithRejection` extractor requires `with-rejection` feature.
+- **breaking:** Upgraded `prost` dependency to v0.14. ([#3517])
 
 [#3298]: https://github.com/tokio-rs/axum/pull/3298
+[#3469]: https://github.com/tokio-rs/axum/pull/3469
+[#3485]: https://github.com/tokio-rs/axum/pull/3485
+[#3517]: https://github.com/tokio-rs/axum/pull/3517
 
 # 0.11.0
 
 Yanked from crates.io due to unforeseen breaking change, see [#3190] for details.
 
 [#3190]: https://github.com/tokio-rs/axum/pull/3190
+
+# 0.10.3
+
+Released without changes to fix docs.rs build.
+
+# 0.10.2
+
+- **added:** Implement `OptionalFromRequest` for `Host` ([#3177])
+
+[#3177]: https://github.com/tokio-rs/axum/pull/3177
 
 # 0.10.1
 
